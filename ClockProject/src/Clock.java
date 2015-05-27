@@ -1,7 +1,3 @@
-//test
-//hungry test
-//hungry test2
-
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
@@ -38,6 +34,8 @@ public class Clock extends JFrame {
 	private JPanel panel_1;
 	private JScrollPane scrollPane;
 	private JButton btnAdd;
+	
+	private SetAlarm alarmFrame; //SetAlarm JFrame object
 
 	/**
 	 * Launch the application.
@@ -119,6 +117,16 @@ public class Clock extends JFrame {
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//this button will open new dialog to make new alarm
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						try {
+							SetAlarm alarmFrame = new SetAlarm();
+							alarmFrame.setVisible(true);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
 			}
 		});
 		Alarm.add(btnAdd, BorderLayout.SOUTH);
