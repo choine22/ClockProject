@@ -12,6 +12,8 @@ import javax.swing.SwingConstants;
 import javax.swing.JButton;
 
 import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 
 public class Clock extends JFrame {
@@ -76,6 +78,11 @@ public class Clock extends JFrame {
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		btnChange = new JButton("Change date and time");
+		btnChange.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//open the window to change date and time
+			}
+		});
 		panel.add(btnChange);
 		
 		Alarm = new JPanel();
