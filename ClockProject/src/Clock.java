@@ -4,6 +4,9 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JTabbedPane;
+import javax.swing.JScrollPane;
+import java.awt.GridLayout;
 
 
 public class Clock extends JFrame {
@@ -36,6 +39,19 @@ public class Clock extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+		
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		contentPane.add(tabbedPane, BorderLayout.CENTER);
+		
+		JPanel Clock = new JPanel();
+		tabbedPane.addTab("Clock", null, Clock, null);
+		
+		JPanel Alarm = new JPanel();
+		tabbedPane.addTab("Alarm", null, Alarm, null);
+		Alarm.setLayout(new GridLayout(0, 1, 0, 0));
+		
+		JScrollPane scrollPane = new JScrollPane();
+		Alarm.add(scrollPane);
 	}
 
 }
