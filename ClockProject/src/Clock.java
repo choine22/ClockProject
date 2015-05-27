@@ -1,3 +1,7 @@
+//test
+//hungry test
+//hungry test2
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
@@ -106,6 +110,11 @@ public class Clock extends JFrame {
 		scrollPane.add(panel_1);
 		
 		btnAdd = new JButton("Add");
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//this button will open new dialog to make new alarm
+			}
+		});
 		Alarm.add(btnAdd, BorderLayout.SOUTH);
 	}
 
