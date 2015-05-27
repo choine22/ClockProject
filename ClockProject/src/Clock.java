@@ -36,6 +36,7 @@ public class Clock extends JFrame {
 	private JButton btnAdd;
 	
 	private SetAlarm alarmFrame; //SetAlarm JFrame object
+	private Change changeFrame;
 
 	/**
 	 * Launch the application.
@@ -92,8 +93,8 @@ public class Clock extends JFrame {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						try {
-							Change frame = new Change();
-							frame.setVisible(true);
+							changeFrame = new Change();
+							changeFrame.setVisible(true);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
