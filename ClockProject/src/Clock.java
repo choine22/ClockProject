@@ -78,10 +78,6 @@ public class Clock extends JFrame {
 		Clock.add(lblTime);
 		Clock.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		lblTime = new JLabel("Time");
-		lblTime.setHorizontalAlignment(SwingConstants.CENTER);
-		Clock.add(lblTime);
-		
 		lblDate = new JLabel("Date");
 		lblDate.setHorizontalAlignment(SwingConstants.CENTER);
 		Clock.add(lblDate);
@@ -120,6 +116,11 @@ public class Clock extends JFrame {
 		scrollPane.add(panel_1);
 		
 		btnAdd = new JButton("Add");
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//this button will open new dialog to make new alarm
+			}
+		});
 		Alarm.add(btnAdd, BorderLayout.SOUTH);
 	}
 
