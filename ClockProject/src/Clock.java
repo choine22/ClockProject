@@ -10,11 +10,15 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.JButton;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+import java.awt.FlowLayout;
 
 public class Clock extends JFrame {
 
@@ -63,11 +67,12 @@ public class Clock extends JFrame {
 		
 		Clock = new JPanel();
 		tabbedPane.addTab("Clock", null, Clock, null);
-		Clock.setLayout(new GridLayout(0, 1, 0, 0));
+			Clock.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		lblTime = new JLabel("Time");
 		lblTime.setHorizontalAlignment(SwingConstants.CENTER);
 		Clock.add(lblTime);
+		Clock.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		lblDate = new JLabel("Date");
 		lblDate.setHorizontalAlignment(SwingConstants.CENTER);
@@ -81,6 +86,11 @@ public class Clock extends JFrame {
 		btnChange.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//open the window to change date and time
+				try {
+				
+				} catch(Exception e1){
+						
+					}
 			}
 		});
 		panel.add(btnChange);
