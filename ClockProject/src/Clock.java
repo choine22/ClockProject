@@ -114,7 +114,7 @@ public class Clock extends JFrame {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						try {
-							SetAlarm alarmFrame = new SetAlarm();
+							alarmFrame = new SetAlarm();
 							alarmFrame.setVisible(true);
 						} catch (Exception e) {
 							e.printStackTrace();
