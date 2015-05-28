@@ -6,7 +6,9 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTabbedPane;
 import javax.swing.JScrollPane;
+
 import java.awt.GridLayout;
+
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
@@ -17,7 +19,6 @@ import javax.swing.JButton;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-
 import java.awt.FlowLayout;
 
 public class Clock extends JFrame {
@@ -35,6 +36,7 @@ public class Clock extends JFrame {
 	private JButton btnAdd;
 	
 	private SetAlarm alarmFrame; //SetAlarm JFrame object
+	private Change changeFrame;
 
 	/**
 	 * Launch the application.
@@ -88,11 +90,16 @@ public class Clock extends JFrame {
 		btnChange.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//open the window to change date and time
-				try {
-				
-				} catch(Exception e1){
-						
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						try {
+							changeFrame = new Change();
+							changeFrame.setVisible(true);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
+				});
 			}
 		});
 		panel.add(btnChange);
