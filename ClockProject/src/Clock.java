@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -20,6 +21,14 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.FlowLayout;
+import java.util.Date;
+import java.util.ListIterator;
+
+import javax.swing.JList;
+import javax.swing.border.LineBorder;
+
+import java.awt.Color;
+import javax.swing.BoxLayout;
 
 public class Clock extends JFrame {
 
@@ -31,12 +40,15 @@ public class Clock extends JFrame {
 	private JPanel panel;
 	private JButton btnChange;
 	private JPanel Alarm;
-	private JPanel panel_1;
 	private JScrollPane scrollPane;
 	private JButton btnAdd;
-	
-	private SetAlarm alarmFrame; //SetAlarm JFrame object
+
+	JFrame frame = this;
+
 	private Change changeFrame;
+	private JList list;
+	private JPanel frm;
+	private JPanel example;
 
 	/**
 	 * Launch the application.
@@ -65,31 +77,31 @@ public class Clock extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		
+
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
-		
+
 		Clock = new JPanel();
 		tabbedPane.addTab("Clock", null, Clock, null);
-			Clock.setLayout(new GridLayout(0, 1, 0, 0));
-		
+		Clock.setLayout(new GridLayout(0, 1, 0, 0));
+
 		lblTime = new JLabel("Time");
 		lblTime.setHorizontalAlignment(SwingConstants.CENTER);
 		Clock.add(lblTime);
 		Clock.setLayout(new GridLayout(0, 1, 0, 0));
-		
+
 		lblDate = new JLabel("Date");
 		lblDate.setHorizontalAlignment(SwingConstants.CENTER);
 		Clock.add(lblDate);
-		
+
 		panel = new JPanel();
 		Clock.add(panel);
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		
+
 		btnChange = new JButton("Change date and time");
 		btnChange.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//open the window to change date and time
+				// open the window to change date and time
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						try {
@@ -103,33 +115,45 @@ public class Clock extends JFrame {
 			}
 		});
 		panel.add(btnChange);
-		
+
 		Alarm = new JPanel();
 		tabbedPane.addTab("Alarm", null, Alarm, null);
 		Alarm.setLayout(new BorderLayout(0, 0));
+
+		frm = new JPanel();
 		
-		scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane(frm);
+		frm.setLayout(new BoxLayout(frm, BoxLayout.Y_AXIS));
+		
+		example = new JPanel();
+		frm.add(example);
 		Alarm.add(scrollPane);
-		
-		panel_1 = new JPanel();
-		scrollPane.add(panel_1);
-		
+
 		btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//this button will open new dialog to make new alarm
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						try {
-							alarmFrame = new SetAlarm();
-							alarmFrame.setVisible(true);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				});
+				AddAlarm addDlg = new AddAlarm(frame);
+				addDlg.setVisible(true);
+
+				// get Data and make new panel
+				JPanel newAlarm = new JPanel();
+				newAlarm.setLayout(new GridLayout(2,0,0,0));
+				newAlarm.setBorder(new LineBorder(new Color(0, 0, 0)));
+				newAlarm.setPreferredSize(new Dimension(frm.getWidth(),50));
+				JLabel lblName = new JLabel(addDlg.getName());
+				JLabel lblTime_1 = new JLabel(addDlg.getHour() +":"+ addDlg.getMinute());
+				JLabel lblDays = new JLabel(addDlg.getDay());
+				newAlarm.add(lblName);
+				newAlarm.add(lblTime_1);
+				newAlarm.add(lblDays);
+				
+				// update GUI
+				frm.add(newAlarm);
+				frm.revalidate();
+				frm.repaint();
 			}
 		});
+
 		Alarm.add(btnAdd, BorderLayout.SOUTH);
 	}
 
