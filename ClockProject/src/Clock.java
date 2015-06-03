@@ -184,6 +184,70 @@ public class Clock extends JFrame {
 	 
 		 
 	 		Alarm.add(btnAdd, BorderLayout.SOUTH); 
+		Alarm = new JPanel();
+		tabbedPane.addTab("Alarm", null, Alarm, null);
+		Alarm.setLayout(new BorderLayout(0, 0));
+
+		frm = new JPanel();
+		
+		scrollPane = new JScrollPane(frm);
+		frm.setLayout(new BoxLayout(frm, BoxLayout.Y_AXIS));
+		Alarm.add(scrollPane);
+
+		btnAdd = new JButton("Add");
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				final AddAlarm addDlg = new AddAlarm(frame);
+				addDlg.setVisible(true);
+
+				if(addDlg.getSaveStatus() == true) {
+					// get Data and make new panel
+					final JPanel newAlarm = new JPanel();
+					newAlarm.setLayout(new GridLayout(2,0,0,0));
+					newAlarm.setBorder(new LineBorder(new Color(0, 0, 0)));
+					newAlarm.setPreferredSize(new Dimension(frm.getWidth(),50));
+					JLabel lblName = new JLabel("   "+addDlg.getTime()+" - "+addDlg.getName());
+					lblName.setFont(new Font("±¼¸²", Font.PLAIN, 16));
+					JLabel lblDays = new JLabel("   "+addDlg.getDay());
+					newAlarm.add(lblName);
+					
+					btnEdit = new JButton("Edit");
+					newAlarm.add(btnEdit);
+					newAlarm.add(lblDays);
+					btnDelete = new JButton("Delete");
+					newAlarm.add(btnDelete);
+					
+					// update GUI
+					frm.add(newAlarm);
+					frm.revalidate();
+					frm.repaint();
+					
+					// add thread worker, it works at only it checked ON
+					if(addDlg.getOnOffStatus() == true) {
+						workThread = new Thread(new checkAlarm(addDlg));
+						workThread.start();
+					}
+					
+					btnEdit.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							// show current dialog
+							addDlg.setVisible(true);
+							
+						}
+					});
+										
+					btnDelete.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							// remove panel and update GUI
+							frm.remove(newAlarm);
+							frm.revalidate();
+							frm.repaint();
+						}
+					});					
+				}
+			}
+		});	
+		Alarm.add(btnAdd, BorderLayout.SOUTH);
 	}
 
 }

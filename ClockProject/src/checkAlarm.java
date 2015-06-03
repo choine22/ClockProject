@@ -13,7 +13,7 @@ public class checkAlarm implements Runnable {
 			
 	@Override
 	public void run() {
-		System.out.printf(this.dialog.getName()+" is Running");
+		System.out.println(this.dialog.getName()+" is Running");
 	}
 
 }

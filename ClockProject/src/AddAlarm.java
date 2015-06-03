@@ -4,6 +4,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -25,6 +28,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 
+import javazoom.jl.player.*;
+
 public class AddAlarm extends JDialog {
 
 	private final JPanel contentPane = new JPanel();
@@ -45,16 +50,17 @@ public class AddAlarm extends JDialog {
 	private JPanel panel;
 	private JPanel panelTo;
 	private JPanel panelFrom;
-	
-	private JCheckBox [] chkLst = new JCheckBox[7];
-	private String [] days = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
-	
+
+	private JCheckBox[] chkLst = new JCheckBox[7];
+	private String[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+
 	// Variables to pass the values to parent frame
+	boolean saveStatus = false;
 	String name;
 	int hour;
 	int minute;
 	String day = "";
-	
+	Player p;
 
 	/**
 	 * Create the dialog.
@@ -89,6 +95,13 @@ public class AddAlarm extends JDialog {
 					FormFactory.RELATED_GAP_ROWSPEC, }));
 
 			chckbxOnoff = new JCheckBox("On/Off");
+			chckbxOnoff.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					
+					
+				}
+			});
+			
 			onoffPane.add(chckbxOnoff, "2, 2");
 
 			txtName = new JTextField();
@@ -122,6 +135,23 @@ public class AddAlarm extends JDialog {
 			        if(returnVal == JFileChooser.APPROVE_OPTION) {
 			        	fileName = chooser.getSelectedFile().getName();
 			        }  
+					// create file chooser and show it
+					JFileChooser fc = new JFileChooser();
+					fc.setFileFilter(new FileNameExtensionFilter("MP3 Files",
+							"mp3"));
+					int returnVal = fc.showOpenDialog(AddAlarm.this);
+
+					// check if user action
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						try {
+							File file = fc.getSelectedFile();
+							String path = file.getAbsolutePath();
+							p = new Player(new FileInputStream(path));
+							txtSong.setText(fc.getSelectedFile().getName()); // update label as selected mp3 file
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
 				}
 			});
 			onoffPane.add(btnChooseSong, "4, 6, 5, 1");
@@ -136,28 +166,26 @@ public class AddAlarm extends JDialog {
 					FormFactory.DEFAULT_COLSPEC,
 					FormFactory.RELATED_GAP_COLSPEC,
 					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,},
-				new RowSpec[] {
+					FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
 					FormFactory.RELATED_GAP_ROWSPEC,
 					FormFactory.DEFAULT_ROWSPEC,
 					FormFactory.RELATED_GAP_ROWSPEC,
 					RowSpec.decode("default:grow"),
 					FormFactory.RELATED_GAP_ROWSPEC,
 					RowSpec.decode("default:grow"),
-					FormFactory.RELATED_GAP_ROWSPEC,}));
+					FormFactory.RELATED_GAP_ROWSPEC, }));
 
 			chckbxRepeat = new JCheckBox("Repeat");
 			repeatPane.add(chckbxRepeat, "2, 2");
-			
+
 			panelFrom = new JPanel();
 			repeatPane.add(panelFrom, "2, 4, fill, fill");
-			panelFrom.add(new DatePicker());			
+			panelFrom.add(new DatePicker());
 
-			
 			lblTo = new JLabel("to");
 			lblTo.setHorizontalAlignment(SwingConstants.CENTER);
 			repeatPane.add(lblTo, "4, 4, center, default");
-			
+
 			panelTo = new JPanel();
 			repeatPane.add(panelTo, "6, 4, fill, fill");
 			panelTo.add(new DatePicker());
@@ -166,7 +194,7 @@ public class AddAlarm extends JDialog {
 			repeatPane.add(panel, "2, 6, 5, 1, fill, fill");
 			panel.setLayout(new GridLayout(1, 0, 0, 0));
 
-			for(int i=0; i<7; i++) {
+			for (int i = 0; i < 7; i++) {
 				chkLst[i] = new JCheckBox(days[i]);
 				panel.add(chkLst[i]);
 			}
@@ -181,25 +209,26 @@ public class AddAlarm extends JDialog {
 				saveButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						name = txtName.getText();
-						if(spinnerMer.getValue() == "AM") 
-							hour = (Integer)spinnerHour.getValue();
-						else 
-							hour = (Integer)spinnerHour.getValue() + 12;
-					
-						minute = (Integer)spinnerMin.getValue();
+						if (spinnerMer.getValue() == "AM")
+							hour = (Integer) spinnerHour.getValue();
+						else
+							hour = (Integer) spinnerHour.getValue() + 12;
 
-						for(int i=0; i<7; i++) {
-							if(chkLst[i].isSelected() == true) {
-								if(day == "")
+						minute = (Integer) spinnerMin.getValue();
+
+						for (int i = 0; i < 7; i++) {
+							if (chkLst[i].isSelected() == true) {
+								if (day == "")
 									day = days[i];
 								else
-									day = day+", "+days[i];
-							}								
+									day = day + ", " + days[i];
+							}
 						}
+						saveStatus = true;
 						setVisible(false);
 					}
 				});
-				saveButton.setActionCommand("OK");
+				saveButton.setActionCommand("Save");
 				buttonPane.add(saveButton);
 				getRootPane().setDefaultButton(saveButton);
 			}
@@ -212,6 +241,7 @@ public class AddAlarm extends JDialog {
 						minute = 0;
 						day = "";
 						setVisible(false);
+						saveStatus = false;
 					}
 				});
 				cancelButton.setActionCommand("Cancel");
@@ -219,18 +249,34 @@ public class AddAlarm extends JDialog {
 			}
 		}
 	}
-	
+
 	public String getName() {
 		return name;
 	}
+
 	public int getHour() {
 		return hour;
 	}
+
 	public int getMinute() {
 		return minute;
 	}
+
 	public String getDay() {
 		return day;
 	}
 	
+	public String getTime() {
+		String time = ""+hour+":";
+		if(minute<10) {
+			time = time+"0"+minute;
+		} else {
+			time = time+minute;
+		}
+		return time;
+	}
+
+	public Player getMusic() {
+		return p;
+	}
 }
