@@ -136,7 +136,7 @@ public class Clock extends JFrame {
 		btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				AddAlarm addDlg = new AddAlarm(frame);
+				final AddAlarm addDlg = new AddAlarm(frame);
 				addDlg.setVisible(true);
 
 				if(addDlg.getSaveStatus() == true) {
@@ -165,15 +165,24 @@ public class Clock extends JFrame {
 					if(addDlg.getOnOffStatus() == true) {
 						workThread = new Thread(new checkAlarm(addDlg));
 						workThread.start();
-
 					}
+					
+					btnEdit.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							// show current dialog
+							addDlg.setVisible(true);
+							
+						}
+					});
+										
 					btnDelete.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
+							// remove panel and update GUI
 							frm.remove(newAlarm);
 							frm.revalidate();
 							frm.repaint();
 						}
-					});
+					});					
 				}
 			}
 		});	

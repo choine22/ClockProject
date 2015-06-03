@@ -93,6 +93,13 @@ public class AddAlarm extends JDialog {
 					FormFactory.RELATED_GAP_ROWSPEC, }));
 
 			chckbxOnoff = new JCheckBox("On/Off");
+			chckbxOnoff.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					
+					
+				}
+			});
+			
 			onoffPane.add(chckbxOnoff, "2, 2");
 
 			txtName = new JTextField();
