@@ -3,6 +3,11 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -24,6 +29,8 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.*;
 
 public class AddAlarm extends JDialog {
 
@@ -50,10 +57,12 @@ public class AddAlarm extends JDialog {
 	private String [] days = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
 	
 	// Variables to pass the values to parent frame
+	boolean saveStatus = false;
 	String name;
 	int hour;
 	int minute;
 	String day = "";
+	Player p;
 	
 
 	/**
@@ -115,13 +124,24 @@ public class AddAlarm extends JDialog {
 			btnChooseSong = new JButton("Choose Song");
 			btnChooseSong.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					String fileName = "";
-					JFileChooser chooser = new JFileChooser();
-			        chooser.setFileFilter(new FileNameExtensionFilter("MP3 Files", "mp3"));
-			        int returnVal = chooser.showOpenDialog(AddAlarm.this);
-			        if(returnVal == JFileChooser.APPROVE_OPTION) {
-			        	fileName = chooser.getSelectedFile().getName();
-			        }  
+					// create file chooser and show it
+					JFileChooser fc = new JFileChooser();
+					fc.setFileFilter(new FileNameExtensionFilter("MP3 Files", "mp3"));
+					int returnVal = fc.showOpenDialog(AddAlarm.this);
+					
+					// check if user action
+					if(returnVal == JFileChooser.APPROVE_OPTION) {
+						File file = fc.getSelectedFile();
+						String path = file.getAbsolutePath();
+						try {
+							p = new Player(new FileInputStream(path));
+							txtSong.setText(fc.getSelectedFile().getName());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+						
+					}
 				}
 			});
 			onoffPane.add(btnChooseSong, "4, 6, 5, 1");
@@ -196,10 +216,11 @@ public class AddAlarm extends JDialog {
 									day = day+", "+days[i];
 							}								
 						}
+						saveStatus = true;
 						setVisible(false);
 					}
 				});
-				saveButton.setActionCommand("OK");
+				saveButton.setActionCommand("Save");
 				buttonPane.add(saveButton);
 				getRootPane().setDefaultButton(saveButton);
 			}
@@ -212,12 +233,25 @@ public class AddAlarm extends JDialog {
 						minute = 0;
 						day = "";
 						setVisible(false);
+						saveStatus = false;
 					}
 				});
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
 			}
 		}
+	}
+	
+	public boolean getSaveStatus() {
+		return saveStatus;
+	}
+	
+	public boolean getOnOffStatus() {
+		return chckbxOnoff.isSelected();
+	}
+	
+	public boolean getRepeatStatus() {
+		return chckbxRepeat.isSelected();
 	}
 	
 	public String getName() {
@@ -233,4 +267,7 @@ public class AddAlarm extends JDialog {
 		return day;
 	}
 	
+	public Player getMusic() {
+		return p;
+	}
 }

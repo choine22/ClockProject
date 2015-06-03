@@ -10,6 +10,7 @@ import javax.swing.JScrollPane;
 
 import java.awt.GridLayout;
 
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
@@ -28,7 +29,10 @@ import javax.swing.JList;
 import javax.swing.border.LineBorder;
 
 import java.awt.Color;
+
 import javax.swing.BoxLayout;
+
+import java.awt.Font;
 
 public class Clock extends JFrame {
 
@@ -48,7 +52,10 @@ public class Clock extends JFrame {
 	private Change changeFrame;
 	private JList list;
 	private JPanel frm;
-	private JPanel example;
+	private JButton btnEdit;
+	private JButton btnDelete;
+	
+	Thread workThread;
 
 	/**
 	 * Launch the application.
@@ -124,35 +131,66 @@ public class Clock extends JFrame {
 		
 		scrollPane = new JScrollPane(frm);
 		frm.setLayout(new BoxLayout(frm, BoxLayout.Y_AXIS));
-		
-		example = new JPanel();
-		frm.add(example);
 		Alarm.add(scrollPane);
 
+		
+		//Sample panel
+		/*
+		JPanel sample = new JPanel();
+		sample.setLayout(new GridLayout(2,0,0,0));
+		sample.setBorder(new LineBorder(new Color(0, 0, 0)));
+		sample.setPreferredSize(new Dimension(frm.getWidth(),50));
+		JLabel lblName = new JLabel("   "+3 +":"+ 30);
+		lblName.setFont(new Font("±¼¸²", Font.PLAIN, 16));
+		lblName.setText(lblName.getText()+" - "+"Test");
+		JLabel lblDays = new JLabel("   "+"Mon");
+		sample.add(lblName);
+		
+		btnEdit = new JButton("Edit");
+		sample.add(btnEdit);
+		sample.add(lblDays);
+		btnDelete = new JButton("Delete");
+		sample.add(btnDelete);
+				
+		frm.add(sample);
+		*/
+		
 		btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				AddAlarm addDlg = new AddAlarm(frame);
 				addDlg.setVisible(true);
 
-				// get Data and make new panel
-				JPanel newAlarm = new JPanel();
-				newAlarm.setLayout(new GridLayout(2,0,0,0));
-				newAlarm.setBorder(new LineBorder(new Color(0, 0, 0)));
-				newAlarm.setPreferredSize(new Dimension(frm.getWidth(),50));
-				JLabel lblName = new JLabel(addDlg.getName());
-				JLabel lblTime_1 = new JLabel(addDlg.getHour() +":"+ addDlg.getMinute());
-				JLabel lblDays = new JLabel(addDlg.getDay());
-				newAlarm.add(lblName);
-				newAlarm.add(lblTime_1);
-				newAlarm.add(lblDays);
-				
-				// update GUI
-				frm.add(newAlarm);
-				frm.revalidate();
-				frm.repaint();
+				if(addDlg.getSaveStatus() == true) {
+					// get Data and make new panel
+					JPanel newAlarm = new JPanel();
+					newAlarm.setLayout(new GridLayout(2,0,0,0));
+					newAlarm.setBorder(new LineBorder(new Color(0, 0, 0)));
+					newAlarm.setPreferredSize(new Dimension(frm.getWidth(),50));
+					JLabel lblName = new JLabel("   "+addDlg.getHour() +":"+ addDlg.getMinute()+" - "+addDlg.getName());
+					lblName.setFont(new Font("±¼¸²", Font.PLAIN, 16));
+					JLabel lblDays = new JLabel("   "+addDlg.getDay());
+					newAlarm.add(lblName);
+					
+					btnEdit = new JButton("Edit");
+					newAlarm.add(btnEdit);
+					newAlarm.add(lblDays);
+					btnDelete = new JButton("Delete");
+					newAlarm.add(btnDelete);
+					
+					// update GUI
+					frm.add(newAlarm);
+					frm.revalidate();
+					frm.repaint();
+					
+					// add thread worker
+					if(addDlg.getOnOffStatus() == true) {
+						workThread = new Thread(new checkAlarm(addDlg));
+						workThread.start();
+					}
+				}
 			}
-		});
+		});	
 
 		Alarm.add(btnAdd, BorderLayout.SOUTH);
 	}
