@@ -133,28 +133,6 @@ public class Clock extends JFrame {
 		frm.setLayout(new BoxLayout(frm, BoxLayout.Y_AXIS));
 		Alarm.add(scrollPane);
 
-		
-		//Sample panel
-		/*
-		JPanel sample = new JPanel();
-		sample.setLayout(new GridLayout(2,0,0,0));
-		sample.setBorder(new LineBorder(new Color(0, 0, 0)));
-		sample.setPreferredSize(new Dimension(frm.getWidth(),50));
-		JLabel lblName = new JLabel("   "+3 +":"+ 30);
-		lblName.setFont(new Font("±¼¸²", Font.PLAIN, 16));
-		lblName.setText(lblName.getText()+" - "+"Test");
-		JLabel lblDays = new JLabel("   "+"Mon");
-		sample.add(lblName);
-		
-		btnEdit = new JButton("Edit");
-		sample.add(btnEdit);
-		sample.add(lblDays);
-		btnDelete = new JButton("Delete");
-		sample.add(btnDelete);
-				
-		frm.add(sample);
-		*/
-		
 		btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -167,7 +145,7 @@ public class Clock extends JFrame {
 					newAlarm.setLayout(new GridLayout(2,0,0,0));
 					newAlarm.setBorder(new LineBorder(new Color(0, 0, 0)));
 					newAlarm.setPreferredSize(new Dimension(frm.getWidth(),50));
-					JLabel lblName = new JLabel("   "+addDlg.getHour() +":"+ addDlg.getMinute()+" - "+addDlg.getName());
+					JLabel lblName = new JLabel("   "+addDlg.getTime()+" - "+addDlg.getName());
 					lblName.setFont(new Font("±¼¸²", Font.PLAIN, 16));
 					JLabel lblDays = new JLabel("   "+addDlg.getDay());
 					newAlarm.add(lblName);
@@ -183,7 +161,7 @@ public class Clock extends JFrame {
 					frm.revalidate();
 					frm.repaint();
 					
-					// add thread worker
+					// add thread worker, it works at only it checked ON
 					if(addDlg.getOnOffStatus() == true) {
 						workThread = new Thread(new checkAlarm(addDlg));
 						workThread.start();
