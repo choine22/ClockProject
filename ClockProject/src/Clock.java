@@ -30,6 +30,8 @@ import javax.swing.border.LineBorder;
 
 import java.awt.Color;
 
+import java.awt.Font;
+
 import javax.swing.BoxLayout;
 
 public class Clock extends JFrame {
@@ -49,8 +51,11 @@ public class Clock extends JFrame {
 
 	private Change changeFrame;
 	private JList list;
-	private JPanel frm;
-	private JPanel example;
+	private JPanel frm; 
+ 	private JButton btnEdit; 
+ 	private JButton btnDelete; 
+ 	
+ 	Thread workThread;
 	
 	private SimpleDateFormat currentTime;
 	private SimpleDateFormat currentDate;
@@ -127,45 +132,58 @@ public class Clock extends JFrame {
 		});
 		panel.add(btnChange);
 
-		Alarm = new JPanel();
-		tabbedPane.addTab("Alarm", null, Alarm, null);
-		Alarm.setLayout(new BorderLayout(0, 0));
-
-		frm = new JPanel();
-		
-		scrollPane = new JScrollPane(frm);
-		frm.setLayout(new BoxLayout(frm, BoxLayout.Y_AXIS));
-		
-		example = new JPanel();
-		frm.add(example);
-		Alarm.add(scrollPane);
-
-		btnAdd = new JButton("Add");
-		btnAdd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				AddAlarm addDlg = new AddAlarm(frame);
-				addDlg.setVisible(true);
-
-				// get Data and make new panel
-				JPanel newAlarm = new JPanel();
-				newAlarm.setLayout(new GridLayout(2,0,0,0));
-				newAlarm.setBorder(new LineBorder(new Color(0, 0, 0)));
-				newAlarm.setPreferredSize(new Dimension(frm.getWidth(),50));
-				JLabel lblName = new JLabel(addDlg.getName());
-				JLabel lblTime_1 = new JLabel(addDlg.getHour() +":"+ addDlg.getMinute());
-				JLabel lblDays = new JLabel(addDlg.getDay());
-				newAlarm.add(lblName);
-				newAlarm.add(lblTime_1);
-				newAlarm.add(lblDays);
-				
-				// update GUI
-				frm.add(newAlarm);
-				frm.revalidate();
-				frm.repaint();
-			}
-		});
-
-		Alarm.add(btnAdd, BorderLayout.SOUTH);
+		Alarm = new JPanel(); 
+		tabbedPane.addTab("Alarm", null, Alarm, null); 
+		Alarm.setLayout(new BorderLayout(0, 0)); 
+	 
+		 
+		frm = new JPanel(); 
+	 		 
+	 		scrollPane = new JScrollPane(frm); 
+	 		frm.setLayout(new BoxLayout(frm, BoxLayout.Y_AXIS)); 
+	 		Alarm.add(scrollPane); 
+	 
+		 
+	 		btnAdd = new JButton("Add"); 
+	 		btnAdd.addActionListener(new ActionListener() { 
+	 			public void actionPerformed(ActionEvent arg0) { 
+	 				AddAlarm addDlg = new AddAlarm(frame); 
+	 				addDlg.setVisible(true); 
+	 
+		 
+	 				if(addDlg.getSaveStatus() == true) { 
+	 					// get Data and make new panel 
+	 					JPanel newAlarm = new JPanel(); 
+	 					newAlarm.setLayout(new GridLayout(2,0,0,0)); 
+	 					newAlarm.setBorder(new LineBorder(new Color(0, 0, 0))); 
+	 					newAlarm.setPreferredSize(new Dimension(frm.getWidth(),50)); 
+	 					JLabel lblName = new JLabel("   "+addDlg.getTime()+" - "+addDlg.getName()); 
+	 					lblName.setFont(new Font("¡¾¨ù¢¬©÷", Font.PLAIN, 16)); 
+	 					JLabel lblDays = new JLabel("   "+addDlg.getDay()); 
+	 					newAlarm.add(lblName); 
+	 					 
+	 					btnEdit = new JButton("Edit"); 
+	 					newAlarm.add(btnEdit); 
+	 					newAlarm.add(lblDays); 
+	 					btnDelete = new JButton("Delete"); 
+	 					newAlarm.add(btnDelete); 
+	 					 
+	 					// update GUI 
+	 					frm.add(newAlarm); 
+	 					frm.revalidate(); 
+	 					frm.repaint(); 
+	 					 
+	 					// add thread worker, it works at only it checked ON 
+	 					if(addDlg.getOnOffStatus() == true) { 
+	 						workThread = new Thread(new checkAlarm(addDlg)); 
+	 						workThread.start(); 
+	 					} 
+	 				} 
+	 			} 
+	 		});	 
+	 
+		 
+	 		Alarm.add(btnAdd, BorderLayout.SOUTH); 
 	}
 
 }
