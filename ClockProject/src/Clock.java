@@ -21,6 +21,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.FlowLayout;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ListIterator;
 
@@ -28,6 +29,7 @@ import javax.swing.JList;
 import javax.swing.border.LineBorder;
 
 import java.awt.Color;
+
 import javax.swing.BoxLayout;
 
 public class Clock extends JFrame {
@@ -49,6 +51,9 @@ public class Clock extends JFrame {
 	private JList list;
 	private JPanel frm;
 	private JPanel example;
+	
+	private SimpleDateFormat currentTime;
+	private SimpleDateFormat currentDate;
 
 	/**
 	 * Launch the application.
@@ -81,17 +86,23 @@ public class Clock extends JFrame {
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
 
+		Date dt = new Date();
+		currentTime = new SimpleDateFormat("hh:mm:ss");
+		currentDate = new SimpleDateFormat("E, M d, y");
+		
 		Clock = new JPanel();
 		tabbedPane.addTab("Clock", null, Clock, null);
 		Clock.setLayout(new GridLayout(0, 1, 0, 0));
 
 		lblTime = new JLabel("Time");
 		lblTime.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTime.setText(currentTime.format(dt).toString());
 		Clock.add(lblTime);
 		Clock.setLayout(new GridLayout(0, 1, 0, 0));
 
 		lblDate = new JLabel("Date");
 		lblDate.setHorizontalAlignment(SwingConstants.CENTER);
+		lblDate.setText(currentDate.format(dt).toString());
 		Clock.add(lblDate);
 
 		panel = new JPanel();
