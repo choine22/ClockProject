@@ -141,7 +141,7 @@ public class Clock extends JFrame {
 
 				if(addDlg.getSaveStatus() == true) {
 					// get Data and make new panel
-					JPanel newAlarm = new JPanel();
+					final JPanel newAlarm = new JPanel();
 					newAlarm.setLayout(new GridLayout(2,0,0,0));
 					newAlarm.setBorder(new LineBorder(new Color(0, 0, 0)));
 					newAlarm.setPreferredSize(new Dimension(frm.getWidth(),50));
@@ -165,11 +165,18 @@ public class Clock extends JFrame {
 					if(addDlg.getOnOffStatus() == true) {
 						workThread = new Thread(new checkAlarm(addDlg));
 						workThread.start();
+
 					}
+					btnDelete.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							frm.remove(newAlarm);
+							frm.revalidate();
+							frm.repaint();
+						}
+					});
 				}
 			}
 		});	
-
 		Alarm.add(btnAdd, BorderLayout.SOUTH);
 	}
 
