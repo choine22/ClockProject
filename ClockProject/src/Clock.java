@@ -10,6 +10,7 @@ import javax.swing.JScrollPane;
 
 import java.awt.GridLayout;
 
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
@@ -20,8 +21,9 @@ import javax.swing.JButton;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.FlowLayout;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ListIterator;
 
@@ -30,9 +32,8 @@ import javax.swing.border.LineBorder;
 
 import java.awt.Color;
 
-import java.awt.Font;
-
 import javax.swing.BoxLayout;
+import java.awt.Font;
 
 public class Clock extends JFrame {
 
@@ -50,15 +51,9 @@ public class Clock extends JFrame {
 	JFrame frame = this;
 
 	private Change changeFrame;
-	private JList list;
-	private JPanel frm; 
- 	private JButton btnEdit; 
- 	private JButton btnDelete; 
- 	
- 	Thread workThread;
-	
-	private SimpleDateFormat currentTime;
-	private SimpleDateFormat currentDate;
+	private JPanel frm;
+
+	Thread workThread;
 
 	/**
 	 * Launch the application.
@@ -91,23 +86,17 @@ public class Clock extends JFrame {
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
 
-		Date dt = new Date();
-		currentTime = new SimpleDateFormat("hh:mm:ss");
-		currentDate = new SimpleDateFormat("E, M d, y");
-		
 		Clock = new JPanel();
 		tabbedPane.addTab("Clock", null, Clock, null);
 		Clock.setLayout(new GridLayout(0, 1, 0, 0));
 
 		lblTime = new JLabel("Time");
 		lblTime.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTime.setText(currentTime.format(dt).toString());
 		Clock.add(lblTime);
 		Clock.setLayout(new GridLayout(0, 1, 0, 0));
 
 		lblDate = new JLabel("Date");
 		lblDate.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDate.setText(currentDate.format(dt).toString());
 		Clock.add(lblDate);
 
 		panel = new JPanel();
@@ -131,59 +120,11 @@ public class Clock extends JFrame {
 			}
 		});
 		panel.add(btnChange);
-
-		Alarm = new JPanel(); 
-		tabbedPane.addTab("Alarm", null, Alarm, null); 
-		Alarm.setLayout(new BorderLayout(0, 0)); 
-	 
-		 
-		frm = new JPanel(); 
-	 		 
-	 		scrollPane = new JScrollPane(frm); 
-	 		frm.setLayout(new BoxLayout(frm, BoxLayout.Y_AXIS)); 
-	 		Alarm.add(scrollPane); 
-	 
-		 
-	 		btnAdd = new JButton("Add"); 
-	 		btnAdd.addActionListener(new ActionListener() { 
-	 			public void actionPerformed(ActionEvent arg0) { 
-	 				AddAlarm addDlg = new AddAlarm(frame); 
-	 				addDlg.setVisible(true); 
-	 
-		 
-	 				if(addDlg.getSaveStatus() == true) { 
-	 					// get Data and make new panel 
-	 					JPanel newAlarm = new JPanel(); 
-	 					newAlarm.setLayout(new GridLayout(2,0,0,0)); 
-	 					newAlarm.setBorder(new LineBorder(new Color(0, 0, 0))); 
-	 					newAlarm.setPreferredSize(new Dimension(frm.getWidth(),50)); 
-	 					JLabel lblName = new JLabel("   "+addDlg.getTime()+" - "+addDlg.getName()); 
-	 					lblName.setFont(new Font("¡¾¨ù¢¬©÷", Font.PLAIN, 16)); 
-	 					JLabel lblDays = new JLabel("   "+addDlg.getDay()); 
-	 					newAlarm.add(lblName); 
-	 					 
-	 					btnEdit = new JButton("Edit"); 
-	 					newAlarm.add(btnEdit); 
-	 					newAlarm.add(lblDays); 
-	 					btnDelete = new JButton("Delete"); 
-	 					newAlarm.add(btnDelete); 
-	 					 
-	 					// update GUI 
-	 					frm.add(newAlarm); 
-	 					frm.revalidate(); 
-	 					frm.repaint(); 
-	 					 
-	 					// add thread worker, it works at only it checked ON 
-	 					if(addDlg.getOnOffStatus() == true) { 
-	 						workThread = new Thread(new checkAlarm(addDlg)); 
-	 						workThread.start(); 
-	 					} 
-	 				} 
-	 			} 
-	 		});	 
-	 
-		 
-	 		Alarm.add(btnAdd, BorderLayout.SOUTH); 
+		
+		
+		/*
+		 * This is for Alarm 
+		 */
 		Alarm = new JPanel();
 		tabbedPane.addTab("Alarm", null, Alarm, null);
 		Alarm.setLayout(new BorderLayout(0, 0));
@@ -191,7 +132,7 @@ public class Clock extends JFrame {
 		frm = new JPanel();
 		
 		scrollPane = new JScrollPane(frm);
-		frm.setLayout(new BoxLayout(frm, BoxLayout.Y_AXIS));
+		frm.setLayout(new GridLayout(0, 1, 0, 0));
 		Alarm.add(scrollPane);
 
 		btnAdd = new JButton("Add");
@@ -199,51 +140,47 @@ public class Clock extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				final AddAlarm addDlg = new AddAlarm(frame);
 				addDlg.setVisible(true);
-
+				
 				if(addDlg.getSaveStatus() == true) {
-					// get Data and make new panel
-					final JPanel newAlarm = new JPanel();
-					newAlarm.setLayout(new GridLayout(2,0,0,0));
-					newAlarm.setBorder(new LineBorder(new Color(0, 0, 0)));
-					newAlarm.setPreferredSize(new Dimension(frm.getWidth(),50));
-					JLabel lblName = new JLabel("   "+addDlg.getTime()+" - "+addDlg.getName());
-					lblName.setFont(new Font("±¼¸²", Font.PLAIN, 16));
-					JLabel lblDays = new JLabel("   "+addDlg.getDay());
-					newAlarm.add(lblName);
-					
-					btnEdit = new JButton("Edit");
-					newAlarm.add(btnEdit);
-					newAlarm.add(lblDays);
-					btnDelete = new JButton("Delete");
-					newAlarm.add(btnDelete);
+					final AlarmPanel pn = new AlarmPanel(addDlg);
+					pn.setAlarmName("   "+addDlg.getTime()+" - "+addDlg.getName());
+					pn.setDays("   "+addDlg.getDay());
 					
 					// update GUI
-					frm.add(newAlarm);
+					frm.add(pn);
 					frm.revalidate();
-					frm.repaint();
+					frm.repaint();					
+
+					final CheckAlarm worker = new CheckAlarm(addDlg);
+					if(addDlg.getOnOffStatus() == true )
+						worker.execute();
 					
-					// add thread worker, it works at only it checked ON
-					if(addDlg.getOnOffStatus() == true) {
-						workThread = new Thread(new checkAlarm(addDlg));
-						workThread.start();
-					}
-					
-					btnEdit.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent arg0) {
-							// show current dialog
+					pn.btnEdit.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							// show current Dialog
 							addDlg.setVisible(true);
+							System.out.println(addDlg.getSaveStatus());
+							// if successfully edited, check on/off button and run the thread
+							if(addDlg.getSaveStatus() == true) {
+								if(addDlg.getOnOffStatus() == true) {						
+									worker.execute();
+								} else {
+									worker.stopWork();
+								}
+							}
 							
 						}
 					});
-										
-					btnDelete.addActionListener(new ActionListener() {
+					
+					pn.btnDelete.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
 							// remove panel and update GUI
-							frm.remove(newAlarm);
+							worker.stopWork();
+							frm.remove(pn);
 							frm.revalidate();
 							frm.repaint();
 						}
-					});					
+					});
 				}
 			}
 		});	

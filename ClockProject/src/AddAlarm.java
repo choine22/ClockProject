@@ -3,9 +3,12 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Date;
+import java.util.Calendar;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -27,8 +30,9 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-
 import javazoom.jl.player.*;
+
+import com.michaelbaranov.microba.calendar.DatePicker;
 
 public class AddAlarm extends JDialog {
 
@@ -51,23 +55,32 @@ public class AddAlarm extends JDialog {
 	private JPanel panelTo;
 	private JPanel panelFrom;
 
+	private final DatePicker dateTo = new DatePicker(new Date());
+	private final DatePicker dateFrom = new DatePicker(new Date());	
+	
+	private final Calendar from = Calendar.getInstance();
+	private final Calendar to = Calendar.getInstance();
+	
 	private JCheckBox[] chkLst = new JCheckBox[7];
 	private String[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
 	// Variables to pass the values to parent frame
 	boolean saveStatus = false;
+	boolean onoffStatus = false;
 	String name;
 	int hour;
 	int minute;
 	String day = "";
 	Player p;
+	
+	JDialog dialog = this;
 
 	/**
 	 * Create the dialog.
 	 */
 	public AddAlarm(JFrame parent) {
 		super(parent, true);
-
+	
 		setBounds(100, 100, 534, 342);
 		getContentPane().setLayout(new BorderLayout());
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -93,12 +106,13 @@ public class AddAlarm extends JDialog {
 					FormFactory.RELATED_GAP_ROWSPEC,
 					FormFactory.DEFAULT_ROWSPEC,
 					FormFactory.RELATED_GAP_ROWSPEC, }));
-
+			
 			chckbxOnoff = new JCheckBox("On/Off");
-			chckbxOnoff.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					
-					
+			
+			chckbxOnoff.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent arg0) {
+					onoffStatus = chckbxOnoff.isSelected();
 				}
 			});
 			
@@ -128,17 +142,9 @@ public class AddAlarm extends JDialog {
 			btnChooseSong = new JButton("Choose Song");
 			btnChooseSong.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					String fileName = "";
-					JFileChooser chooser = new JFileChooser();
-			        chooser.setFileFilter(new FileNameExtensionFilter("MP3 Files", "mp3"));
-			        int returnVal = chooser.showOpenDialog(AddAlarm.this);
-			        if(returnVal == JFileChooser.APPROVE_OPTION) {
-			        	fileName = chooser.getSelectedFile().getName();
-			        }  
 					// create file chooser and show it
 					JFileChooser fc = new JFileChooser();
-					fc.setFileFilter(new FileNameExtensionFilter("MP3 Files",
-							"mp3"));
+					fc.setFileFilter(new FileNameExtensionFilter("MP3 Files", "mp3"));
 					int returnVal = fc.showOpenDialog(AddAlarm.this);
 
 					// check if user action
@@ -146,7 +152,7 @@ public class AddAlarm extends JDialog {
 						try {
 							File file = fc.getSelectedFile();
 							String path = file.getAbsolutePath();
-							p = new Player(new FileInputStream(path));
+							p = new Player(new FileInputStream(path)); // save file's path into player
 							txtSong.setText(fc.getSelectedFile().getName()); // update label as selected mp3 file
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -161,34 +167,49 @@ public class AddAlarm extends JDialog {
 			contentPane.add(repeatPane);
 			repeatPane.setLayout(new FormLayout(new ColumnSpec[] {
 					FormFactory.RELATED_GAP_COLSPEC,
-					ColumnSpec.decode("default:grow"),
+					ColumnSpec.decode("max(100dlu;default)"),
 					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
+					ColumnSpec.decode("max(35dlu;default)"),
 					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
+					ColumnSpec.decode("max(100dlu;default)"),
+					FormFactory.RELATED_GAP_COLSPEC,},
+				new RowSpec[] {
 					FormFactory.RELATED_GAP_ROWSPEC,
 					FormFactory.DEFAULT_ROWSPEC,
 					FormFactory.RELATED_GAP_ROWSPEC,
 					RowSpec.decode("default:grow"),
 					FormFactory.RELATED_GAP_ROWSPEC,
 					RowSpec.decode("default:grow"),
-					FormFactory.RELATED_GAP_ROWSPEC, }));
+					FormFactory.RELATED_GAP_ROWSPEC,}));
 
 			chckbxRepeat = new JCheckBox("Repeat");
 			repeatPane.add(chckbxRepeat, "2, 2");
 
 			panelFrom = new JPanel();
-			repeatPane.add(panelFrom, "2, 4, fill, fill");
-			panelFrom.add(new DatePicker());
-
+			panelFrom.setLayout(new GridLayout(0, 1, 0, 0));
+			panelFrom.add(dateFrom);			
+			repeatPane.add(panelFrom, "2, 4, fill, center");
+			dateFrom.addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                	from.setTime(dateFrom.getDate());       
+                }
+            });
+			
 			lblTo = new JLabel("to");
 			lblTo.setHorizontalAlignment(SwingConstants.CENTER);
-			repeatPane.add(lblTo, "4, 4, center, default");
+			repeatPane.add(lblTo, "4, 4, fill, fill");
 
 			panelTo = new JPanel();
-			repeatPane.add(panelTo, "6, 4, fill, fill");
-			panelTo.add(new DatePicker());
+			repeatPane.add(panelTo, "6, 4, fill, center");
+			panelTo.setLayout(new GridLayout(0, 1, 0, 0));
+			panelTo.add(dateTo);
+			dateTo.addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                	to.setTime(dateFrom.getDate());                      
+                }
+            });
 
 			panel = new JPanel();
 			repeatPane.add(panel, "2, 6, 5, 1, fill, fill");
@@ -213,6 +234,8 @@ public class AddAlarm extends JDialog {
 							hour = (Integer) spinnerHour.getValue();
 						else
 							hour = (Integer) spinnerHour.getValue() + 12;
+						if (spinnerMer.getValue() == "AM" && (Integer) spinnerHour.getValue() == 12) 
+							hour = 0;
 
 						minute = (Integer) spinnerMin.getValue();
 
@@ -249,6 +272,22 @@ public class AddAlarm extends JDialog {
 			}
 		}
 	}
+	
+	public void setOnOffStatus(boolean onoff) {	
+		chckbxOnoff.setSelected(onoff);	
+	}
+
+	public boolean getSaveStatus() {
+		return saveStatus;
+	}
+
+	public boolean getOnOffStatus() {
+		return chckbxOnoff.isSelected();
+	}
+
+	public boolean getRepeatStatus() {
+		return chckbxRepeat.isSelected();
+	}
 
 	public String getName() {
 		return name;
@@ -278,5 +317,13 @@ public class AddAlarm extends JDialog {
 
 	public Player getMusic() {
 		return p;
+	}
+	
+	public Calendar getFrom() {
+		return from;
+	}
+	
+	public Calendar getTo() {
+		return to;
 	}
 }

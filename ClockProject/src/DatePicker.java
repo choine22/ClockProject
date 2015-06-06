@@ -1,3 +1,4 @@
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,6 +11,7 @@ import javax.swing.JPanel;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
+
 
 
 public class DatePicker extends JPanel {
@@ -25,6 +27,7 @@ public class DatePicker extends JPanel {
 		add(datePicker);
 	}
 }
+
 class DatePanel extends JPanel {
 	public DatePanel() {
 		UtilDateModel model = new UtilDateModel();
