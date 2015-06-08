@@ -45,7 +45,7 @@ public class CheckAlarm extends SwingWorker<Boolean, String> {
 						publish(dialog.getName());
 
 						// run in new thread to play in background
-						playMp3(dialog.p);	
+						playMp3(dialog.getMusic());	
 					}
 				}
 			} catch (Exception e) {
@@ -68,8 +68,8 @@ public class CheckAlarm extends SwingWorker<Boolean, String> {
 		
 		ring.cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (dialog.p != null) {
-					dialog.p.close();
+				if (dialog.getMusic() != null) {
+					dialog.getMusic().close();
 					fileRunning = false;
 				}
 				ring.setVisible(false);							
@@ -96,7 +96,7 @@ public class CheckAlarm extends SwingWorker<Boolean, String> {
 	}
 
 	public void playMp3(final Player music) {
-		if (dialog.p != null) {
+		if (dialog.getMusic() != null) {
 			if (fileRunning == false) {
 				new Thread(this) {
 					public void run() {

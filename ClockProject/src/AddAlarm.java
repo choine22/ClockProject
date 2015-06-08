@@ -3,8 +3,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Date;
@@ -16,6 +14,7 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -30,12 +29,15 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-import javazoom.jl.player.*;
+import javazoom.jl.player.*; //Library to play MP3 file
 
-import com.michaelbaranov.microba.calendar.DatePicker;
+import com.michaelbaranov.microba.calendar.DatePicker; //Library to pick date
 
+/**
+ * @author Minyoung
+ *
+ */
 public class AddAlarm extends JDialog {
-
 	private final JPanel contentPane = new JPanel();
 	private JPanel buttonPane;
 	private JButton saveButton;
@@ -55,27 +57,25 @@ public class AddAlarm extends JDialog {
 	private JPanel panelTo;
 	private JPanel panelFrom;
 
+	private final DatePicker dateFrom = new DatePicker(new Date());
 	private final DatePicker dateTo = new DatePicker(new Date());
-	private final DatePicker dateFrom = new DatePicker(new Date());	
-	
+
 	private final Calendar from = Calendar.getInstance();
 	private final Calendar to = Calendar.getInstance();
-	
+
 	private JCheckBox[] chkLst = new JCheckBox[8];
-	private String[] days = {"", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+	private String[] days = { "", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri",	"Sat" };
 
 	/*
-	 *  Variables to pass the values to parent frame
+	 * Variables to pass the values to parent frame
 	 */
-	boolean saveStatus = false;
-	boolean onoffStatus = false;
-	boolean repeatStatus = false;
-	String name;
-	int hour;
-	int minute;
-	String day = "";
-	Player p;
-	
+	private boolean saveStatus = false;
+	private String name;
+	private int hour;
+	private int minute;
+	private String day = "";
+	private Player p;
+
 	JDialog dialog = this;
 
 	/**
@@ -83,7 +83,7 @@ public class AddAlarm extends JDialog {
 	 */
 	public AddAlarm(JFrame parent) {
 		super(parent, true);
-	
+
 		setBounds(100, 100, 534, 342);
 		getContentPane().setLayout(new BorderLayout());
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -109,16 +109,8 @@ public class AddAlarm extends JDialog {
 					FormFactory.RELATED_GAP_ROWSPEC,
 					FormFactory.DEFAULT_ROWSPEC,
 					FormFactory.RELATED_GAP_ROWSPEC, }));
-			
+
 			chckbxOnoff = new JCheckBox("On/Off");
-			
-			chckbxOnoff.addItemListener(new ItemListener() {
-				@Override
-				public void itemStateChanged(ItemEvent arg0) {
-					onoffStatus = chckbxOnoff.isSelected();
-				}
-			});
-			
 			onoffPane.add(chckbxOnoff, "2, 2");
 
 			txtName = new JTextField();
@@ -147,16 +139,16 @@ public class AddAlarm extends JDialog {
 				public void actionPerformed(ActionEvent arg0) {
 					// create file chooser and show it
 					JFileChooser fc = new JFileChooser();
-					fc.setFileFilter(new FileNameExtensionFilter("MP3 Files", "mp3"));
+					fc.setFileFilter(new FileNameExtensionFilter("MP3 Files", "mp3")); //file chooser will get only mp3 files
 					int returnVal = fc.showOpenDialog(AddAlarm.this);
 
-					// check if user action
+					// get file and put into player p
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						try {
 							File file = fc.getSelectedFile();
 							String path = file.getAbsolutePath();
 							p = new Player(new FileInputStream(path)); // save file's path into player
-							txtSong.setText(fc.getSelectedFile().getName()); // update label as selected mp3 file
+							txtSong.setText(fc.getSelectedFile().getName()); // update label as selected mp3 file name
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -175,35 +167,54 @@ public class AddAlarm extends JDialog {
 					ColumnSpec.decode("max(35dlu;default)"),
 					FormFactory.RELATED_GAP_COLSPEC,
 					ColumnSpec.decode("max(100dlu;default)"),
-					FormFactory.RELATED_GAP_COLSPEC,},
-				new RowSpec[] {
+					FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
 					FormFactory.RELATED_GAP_ROWSPEC,
 					FormFactory.DEFAULT_ROWSPEC,
 					FormFactory.RELATED_GAP_ROWSPEC,
 					RowSpec.decode("default:grow"),
 					FormFactory.RELATED_GAP_ROWSPEC,
 					RowSpec.decode("default:grow"),
-					FormFactory.RELATED_GAP_ROWSPEC,}));
+					FormFactory.RELATED_GAP_ROWSPEC, }));
 
 			chckbxRepeat = new JCheckBox("Repeat");
 			chckbxRepeat.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					repeatStatus = chckbxRepeat.isSelected();
+					// use checkboxes and date picker when repeat check box is checked
+					if(chckbxRepeat.isSelected()) {
+						dateFrom.setEnabled(true);
+						dateTo.setEnabled(true);
+						for (int i = 1; i < 8; i++) {
+							chkLst[i].setEnabled(true);
+						}
+					} else {
+						dateFrom.setEnabled(false);
+						dateTo.setEnabled(false);
+						for (int i = 1; i < 8; i++) {
+							chkLst[i].setEnabled(false);
+						}
+					}
 				}
 			});
 			repeatPane.add(chckbxRepeat, "2, 2");
 
 			panelFrom = new JPanel();
 			panelFrom.setLayout(new GridLayout(0, 1, 0, 0));
-			panelFrom.add(dateFrom);			
+			panelFrom.add(dateFrom);
 			repeatPane.add(panelFrom, "2, 4, fill, center");
-			dateFrom.addActionListener(new ActionListener(){
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                	from.setTime(dateFrom.getDate());       
-                }
-            });
 			
+			dateFrom.setEnabled(false);
+			dateFrom.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						from.setTime(dateFrom.getDate());
+						checkFromTo(from, to);
+					} catch (WrongCheckedException e1) {
+						JOptionPane.showMessageDialog(null,"First Date should before than Second Date");
+					}
+				}
+			});
+
 			lblTo = new JLabel("to");
 			lblTo.setHorizontalAlignment(SwingConstants.CENTER);
 			repeatPane.add(lblTo, "4, 4, fill, fill");
@@ -212,21 +223,29 @@ public class AddAlarm extends JDialog {
 			repeatPane.add(panelTo, "6, 4, fill, center");
 			panelTo.setLayout(new GridLayout(0, 1, 0, 0));
 			panelTo.add(dateTo);
-			dateTo.addActionListener(new ActionListener(){
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                	to.setTime(dateTo.getDate());                      
-                }
-            });
+			
+			dateTo.setEnabled(false);
+			dateTo.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						to.setTime(dateTo.getDate());
+						checkFromTo(from, to);
+					} catch (WrongCheckedException e1) {
+						JOptionPane.showMessageDialog(null,"First Date should before than Second Date");
+					}
+				}
+			});		
 
 			panel = new JPanel();
 			repeatPane.add(panel, "2, 6, 5, 1, fill, fill");
 			panel.setLayout(new GridLayout(1, 0, 0, 0));
-			
-			// get String from days array and create CheckList 
+
+			// get String from days array and create CheckList
 			for (int i = 1; i < 8; i++) {
 				chkLst[i] = new JCheckBox(days[i]);
 				panel.add(chkLst[i]);
+				chkLst[i].setEnabled(false);
 			}
 		}
 		{
@@ -239,20 +258,24 @@ public class AddAlarm extends JDialog {
 				saveButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						name = txtName.getText();
+						
+						// 12AM will be 0, 12PM will be 12 and use 24hour format
 						if (spinnerMer.getValue() == "AM")
 							hour = (Integer) spinnerHour.getValue();
 						else
 							hour = (Integer) spinnerHour.getValue() + 12;
-						if (spinnerMer.getValue() == "AM" && (Integer) spinnerHour.getValue() == 12) 
+						if (spinnerMer.getValue() == "AM"
+								&& (Integer) spinnerHour.getValue() == 12)
 							hour = 0;
-						if (spinnerMer.getValue() == "PM" && (Integer) spinnerHour.getValue() == 12) 
+						if (spinnerMer.getValue() == "PM"
+								&& (Integer) spinnerHour.getValue() == 12)
 							hour = 12;
 
-						minute = (Integer) spinnerMin.getValue();						
-						
+						minute = (Integer) spinnerMin.getValue();
+
 						setDay();
-						saveStatus = true;
-						setVisible(false);
+						saveStatus = true; // if sucessfully saved, set true the saveStatus flag
+						setVisible(false); // close the dialog
 					}
 				});
 				saveButton.setActionCommand("Save");
@@ -267,8 +290,8 @@ public class AddAlarm extends JDialog {
 						hour = 0;
 						minute = 0;
 						day = "";
-						setVisible(false);
-						saveStatus = false;
+						saveStatus = false; // if it's not saved, set false
+						setVisible(false);						
 					}
 				});
 				cancelButton.setActionCommand("Cancel");
@@ -277,10 +300,17 @@ public class AddAlarm extends JDialog {
 		}
 	}
 	
-	public void setOnOffStatus(boolean onoff) {	
-		chckbxOnoff.setSelected(onoff);	
+
+	/*
+	 * Setters
+	 */
+	
+	/* set chckbxOnoff JCheckBox */
+	public void setOnOffStatus(boolean onoff) {
+		chckbxOnoff.setSelected(onoff);
 	}
 	
+	/* set String day to add on AlarmPanel */
 	public void setDay() {
 		day = "";
 		for (int i = 1; i < 8; i++) {
@@ -293,6 +323,10 @@ public class AddAlarm extends JDialog {
 		}
 	}
 	
+	/*
+	 * Getters
+	 */
+
 	public boolean getSaveStatus() {
 		return saveStatus;
 	}
@@ -320,30 +354,44 @@ public class AddAlarm extends JDialog {
 	public String getDay() {
 		return day;
 	}
-	
+
 	public JCheckBox[] getDays() {
 		return chkLst;
 	}
-	
+
 	public String getTime() {
-		String time = ""+hour+":";
-		if(minute<10) {
-			time = time+"0"+minute;
+		String time = "" + hour + ":";
+		if (minute < 10) {
+			time = time + "0" + minute;
 		} else {
-			time = time+minute;
-		}
+			time = time + minute;
+		} // to make time String looks like H:MM
+		
 		return time;
 	}
 
 	public Player getMusic() {
 		return p;
 	}
-	
+
 	public Calendar getFrom() {
 		return from;
 	}
-	
+
 	public Calendar getTo() {
 		return to;
+	}
+	
+	
+	/*
+	 * Exception for check 'from' is before 'to'
+	 */
+	public class WrongCheckedException extends Exception {
+		public WrongCheckedException(Calendar from, Calendar to) {			
+		}
+	}
+	public void checkFromTo(Calendar from, Calendar to) throws WrongCheckedException {
+		if(from.after(to)) 
+			throw new WrongCheckedException(from, to);
 	}
 }

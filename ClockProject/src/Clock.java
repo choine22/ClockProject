@@ -12,6 +12,7 @@ import java.awt.GridLayout;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -24,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.FlowLayout;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.ListIterator;
 
@@ -33,6 +35,7 @@ import javax.swing.border.LineBorder;
 import java.awt.Color;
 
 import javax.swing.BoxLayout;
+
 import java.awt.Font;
 
 public class Clock extends JFrame {
@@ -44,16 +47,16 @@ public class Clock extends JFrame {
 	private JLabel lblDate;
 	private JPanel panel;
 	private JButton btnChange;
-	private JPanel Alarm;
+	
+	private Change changeFrame;
+	
+	ArrayList<AlarmPanel> lstPanel = new ArrayList<AlarmPanel> ();
+	private JPanel AlarmTab;
 	private JScrollPane scrollPane;
 	private JButton btnAdd;
-
+	private JPanel pnLst;
+	
 	JFrame frame = this;
-
-	private Change changeFrame;
-	private JPanel frm;
-
-	CheckAlarm worker;
 
 	/**
 	 * Launch the application.
@@ -125,43 +128,57 @@ public class Clock extends JFrame {
 		/*
 		 * This is for Alarm 
 		 */
-		Alarm = new JPanel();
-		tabbedPane.addTab("Alarm", null, Alarm, null);
-		Alarm.setLayout(new BorderLayout(0, 0));
+		AlarmTab = new JPanel();
+		tabbedPane.addTab("Alarm", null, AlarmTab, null);
+		AlarmTab.setLayout(new BorderLayout(0, 0));
 
-		frm = new JPanel();
-		
-		scrollPane = new JScrollPane(frm);
-		frm.setLayout(new GridLayout(0, 1, 0, 0));
-		Alarm.add(scrollPane);
+		pnLst = new JPanel();		
+		scrollPane = new JScrollPane(pnLst);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		pnLst.setLayout(new GridLayout(0, 1, 0, 0));
+		AlarmTab.add(scrollPane);
 
 		btnAdd = new JButton("Add");
+		AlarmTab.add(btnAdd, BorderLayout.SOUTH);
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				final AddAlarm addDlg = new AddAlarm(frame);
+				AddAlarm addDlg = new AddAlarm(frame);
 				addDlg.setVisible(true);
 				
 				if(addDlg.getSaveStatus() == true) {
-					final AlarmPanel pn = new AlarmPanel(addDlg);
+					AlarmPanel pn = new AlarmPanel(addDlg, (Clock) frame);
 					pn.setAlarmName("   "+addDlg.getTime()+" - "+addDlg.getName());
 					pn.setDays("   "+addDlg.getDay());
 					
-					// update GUI
-					frm.add(pn);
-					frm.revalidate();
-					frm.repaint();					
-
-					pn.btnDelete.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent arg0) {
-							// remove panel and update GUI
-							frm.remove(pn);
-							frm.revalidate();
-							frm.repaint();
-						}
-					});	
+					lstPanel.add(pn);
 				}
+				updateGUI();
 			}
-		});	
-		Alarm.add(btnAdd, BorderLayout.SOUTH);
+		});		
+	}
+	
+	public void addAlarmPanel(AlarmPanel pn) {
+		lstPanel.add(pn);
+	}
+	
+	public void removeAlarmPanel(AlarmPanel pn) {
+		lstPanel.remove(pn);
+	}
+	
+	public void updateGUI() {
+		// reset the panel
+		pnLst.removeAll();
+		
+		// loop all contact in the list
+		ListIterator<AlarmPanel> litr = lstPanel.listIterator();
+		while(litr.hasNext()) {
+			AlarmPanel element = litr.next();
+			pnLst.add(element);
+		}
+		
+		// redraw the GUI
+		pnLst.revalidate();
+		pnLst.repaint();
 	}
 }

@@ -12,19 +12,26 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.border.EtchedBorder;
 
+import java.awt.Dimension;
+import java.awt.Font;
+
+/**
+ * @author Minyoung
+ *
+ */
 public class AlarmPanel extends JPanel {
 	private JLabel lblName;
 	private JLabel lblDays;
 	private JButton btnEdit;
-	protected JButton btnDelete;
-
+	private JButton btnDelete;
+	private CheckAlarm workThread;
+	
 	JPanel pnl = this;
-	CheckAlarm workThread;
 	
 	/**
 	 * Create the panel.
 	 */
-	public AlarmPanel(final AddAlarm parent) {
+	public AlarmPanel(final AddAlarm parent, final Clock c) {
 		super(true);
 		workThread = new CheckAlarm(parent);
 		
@@ -43,6 +50,7 @@ public class AlarmPanel extends JPanel {
 				FormFactory.RELATED_GAP_ROWSPEC,}));
 		
 		lblName = new JLabel("New label");
+		lblName.setFont(new Font("±¼¸²", Font.BOLD, 15));
 		add(lblName, "2, 2");
 		
 		btnEdit = new JButton("Edit");
@@ -84,6 +92,9 @@ public class AlarmPanel extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				// stop the thread
 				workThread.stopWork();
+				// remove panel from the list
+				c.removeAlarmPanel(AlarmPanel.this);
+				c.updateGUI();
 			}
 		});
 	}
