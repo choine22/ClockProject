@@ -1,3 +1,6 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JPanel;
 
 import com.jgoodies.forms.layout.FormLayout;
@@ -12,18 +15,18 @@ import javax.swing.border.EtchedBorder;
 public class AlarmPanel extends JPanel {
 	private JLabel lblName;
 	private JLabel lblDays;
-	protected JButton btnEdit;
+	private JButton btnEdit;
 	protected JButton btnDelete;
 
 	JPanel pnl = this;
-	Thread workThread;
+	CheckAlarm workThread;
 	
 	/**
 	 * Create the panel.
 	 */
 	public AlarmPanel(final AddAlarm parent) {
 		super(true);
-		workThread = new Thread(new CheckAlarm(parent));
+		workThread = new CheckAlarm(parent);
 		
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		setLayout(new FormLayout(new ColumnSpec[] {
@@ -50,10 +53,39 @@ public class AlarmPanel extends JPanel {
 		
 		btnDelete = new JButton("Delete");
 		add(btnDelete, "4, 4");
-
-		if(parent.getOnOffStatus() == true) {
-			//workThread.run();
+		
+		if(parent.getOnOffStatus() == true ) {
+			workThread.execute();
 		}
+			
+		
+		btnEdit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// show current Dialog
+				parent.setVisible(true);
+
+				// if successfully edited, check on/off button and run the thread
+				if(parent.getSaveStatus() == true) {
+					if(parent.getOnOffStatus() == true) {						
+						workThread.execute();
+					} else {
+						workThread.stopWork();
+					}
+					
+					// update GUI
+					parent.setDay(); //
+					setAlarmName("   "+parent.getTime()+" - "+parent.getName());
+					setDays("   "+parent.getDay());
+				}							
+			}
+		});
+		
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// stop the thread
+				workThread.stopWork();
+			}
+		});
 	}
 	
 	public void setAlarmName(String name) {

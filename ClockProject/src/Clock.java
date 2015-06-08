@@ -53,7 +53,7 @@ public class Clock extends JFrame {
 	private Change changeFrame;
 	private JPanel frm;
 
-	Thread workThread;
+	CheckAlarm worker;
 
 	/**
 	 * Launch the application.
@@ -151,40 +151,17 @@ public class Clock extends JFrame {
 					frm.revalidate();
 					frm.repaint();					
 
-					final CheckAlarm worker = new CheckAlarm(addDlg);
-					if(addDlg.getOnOffStatus() == true )
-						worker.execute();
-					
-					pn.btnEdit.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							// show current Dialog
-							addDlg.setVisible(true);
-							System.out.println(addDlg.getSaveStatus());
-							// if successfully edited, check on/off button and run the thread
-							if(addDlg.getSaveStatus() == true) {
-								if(addDlg.getOnOffStatus() == true) {						
-									worker.execute();
-								} else {
-									worker.stopWork();
-								}
-							}
-							
-						}
-					});
-					
 					pn.btnDelete.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
 							// remove panel and update GUI
-							worker.stopWork();
 							frm.remove(pn);
 							frm.revalidate();
 							frm.repaint();
 						}
-					});
+					});	
 				}
 			}
 		});	
 		Alarm.add(btnAdd, BorderLayout.SOUTH);
 	}
-
 }

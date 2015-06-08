@@ -61,12 +61,15 @@ public class AddAlarm extends JDialog {
 	private final Calendar from = Calendar.getInstance();
 	private final Calendar to = Calendar.getInstance();
 	
-	private JCheckBox[] chkLst = new JCheckBox[7];
-	private String[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+	private JCheckBox[] chkLst = new JCheckBox[8];
+	private String[] days = {"", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
-	// Variables to pass the values to parent frame
+	/*
+	 *  Variables to pass the values to parent frame
+	 */
 	boolean saveStatus = false;
 	boolean onoffStatus = false;
+	boolean repeatStatus = false;
 	String name;
 	int hour;
 	int minute;
@@ -183,6 +186,11 @@ public class AddAlarm extends JDialog {
 					FormFactory.RELATED_GAP_ROWSPEC,}));
 
 			chckbxRepeat = new JCheckBox("Repeat");
+			chckbxRepeat.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					repeatStatus = chckbxRepeat.isSelected();
+				}
+			});
 			repeatPane.add(chckbxRepeat, "2, 2");
 
 			panelFrom = new JPanel();
@@ -207,15 +215,16 @@ public class AddAlarm extends JDialog {
 			dateTo.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                	to.setTime(dateFrom.getDate());                      
+                	to.setTime(dateTo.getDate());                      
                 }
             });
 
 			panel = new JPanel();
 			repeatPane.add(panel, "2, 6, 5, 1, fill, fill");
 			panel.setLayout(new GridLayout(1, 0, 0, 0));
-
-			for (int i = 0; i < 7; i++) {
+			
+			// get String from days array and create CheckList 
+			for (int i = 1; i < 8; i++) {
 				chkLst[i] = new JCheckBox(days[i]);
 				panel.add(chkLst[i]);
 			}
@@ -236,17 +245,12 @@ public class AddAlarm extends JDialog {
 							hour = (Integer) spinnerHour.getValue() + 12;
 						if (spinnerMer.getValue() == "AM" && (Integer) spinnerHour.getValue() == 12) 
 							hour = 0;
+						if (spinnerMer.getValue() == "PM" && (Integer) spinnerHour.getValue() == 12) 
+							hour = 12;
 
-						minute = (Integer) spinnerMin.getValue();
-
-						for (int i = 0; i < 7; i++) {
-							if (chkLst[i].isSelected() == true) {
-								if (day == "")
-									day = days[i];
-								else
-									day = day + ", " + days[i];
-							}
-						}
+						minute = (Integer) spinnerMin.getValue();						
+						
+						setDay();
 						saveStatus = true;
 						setVisible(false);
 					}
@@ -276,7 +280,19 @@ public class AddAlarm extends JDialog {
 	public void setOnOffStatus(boolean onoff) {	
 		chckbxOnoff.setSelected(onoff);	
 	}
-
+	
+	public void setDay() {
+		day = "";
+		for (int i = 1; i < 8; i++) {
+			if (chkLst[i].isSelected() == true) {
+				if (day == "")
+					day = days[i];
+				else
+					day = day + ", " + days[i];
+			}
+		}
+	}
+	
 	public boolean getSaveStatus() {
 		return saveStatus;
 	}
@@ -303,6 +319,10 @@ public class AddAlarm extends JDialog {
 
 	public String getDay() {
 		return day;
+	}
+	
+	public JCheckBox[] getDays() {
+		return chkLst;
 	}
 	
 	public String getTime() {
